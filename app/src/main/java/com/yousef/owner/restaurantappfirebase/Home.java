@@ -1,28 +1,20 @@
 package com.yousef.owner.restaurantappfirebase;
 
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.firebase.ui.database.SnapshotParser;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.squareup.picasso.Picasso;
-import com.yousef.owner.restaurantappfirebase.Interface.ItemClickListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.yousef.owner.restaurantappfirebase.Model.Category;
-import com.yousef.owner.restaurantappfirebase.ViewHolder.MenuViewHolder;
 import com.yousef.owner.restaurantappfirebase.common.Common;
 
 import androidx.annotation.NonNull;
@@ -37,6 +29,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class Home extends AppCompatActivity {
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    private CollectionReference menuRef = db.collection("category");
+    private menuAdapter adapter;
 
 //    FirebaseDatabase firebaseDatabase;
 //    DatabaseReference category;
@@ -89,63 +85,39 @@ public class Home extends AppCompatActivity {
         UserName.setText(Common.currentUser.getName());
 
 
-        //RecyclerView LayoutManger
-        recyclerView = findViewById(R.id.recycler);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+
 
         loadMenu();
 
     }
 
     private void loadMenu() {
+        Query query = menuRef.orderBy("name",Query.Direction.DESCENDING);
 
 
-        Query query = FirebaseDatabase.getInstance()
-                .getReference()
-                .child("category");
+        FirestoreRecyclerOptions<Category> recyclerOptions = new FirestoreRecyclerOptions.Builder<Category>().setQuery(query,Category.class).build();
+        adapter = new menuAdapter(recyclerOptions);
 
-        FirebaseRecyclerOptions<Category> options =
-                new FirebaseRecyclerOptions.Builder<Category>()
-                        .setQuery(query, new SnapshotParser<Category>() {
-                            @NonNull
-                            @Override
-                            public Category parseSnapshot(@NonNull DataSnapshot snapshot) {
-                                return new Category(snapshot.child("name").getValue().toString());
-                            }
-                        })
-                        .build();
-        FirebaseRecyclerAdapter adapter = new FirebaseRecyclerAdapter<Category, MenuViewHolder>(options) {
-
-
-            @Override
-            protected void onBindViewHolder(@NonNull MenuViewHolder holder, int position, @NonNull Category model) {
-
-                holder.textMenuView.setText(model.getName());
-                Picasso.get().load(model.getImage()).into(holder.imageMenuView);
-
-                final Category clickItem = model;
-                holder.setItemClickListener(new ItemClickListener() {
-                    @Override
-                    public void OnClick(View view, int position, boolean isLongClick) {
-                        Toast.makeText(Home.this, "" + clickItem.getName(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            @NonNull
-            @Override
-            public MenuViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-                View view = LayoutInflater.from(parent.getContext())
-                        .inflate(R.layout.menu_item, parent, false);
-
-                return new MenuViewHolder(view);
-            }
-        };
-
+        //RecyclerView LayoutManger
+        recyclerView = findViewById(R.id.recycler);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
+
+        Toast.makeText(getApplicationContext(),"Here",Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adapter.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 
     @Override
