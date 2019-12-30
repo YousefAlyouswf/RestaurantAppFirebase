@@ -5,7 +5,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -88,7 +87,6 @@ public class Home extends AppCompatActivity {
 
 
         loadMenu();
-
     }
 
     private void loadMenu() {
@@ -105,7 +103,6 @@ public class Home extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
-        Toast.makeText(getApplicationContext(),"Here",Toast.LENGTH_SHORT).show();
     }
 
     @Override
