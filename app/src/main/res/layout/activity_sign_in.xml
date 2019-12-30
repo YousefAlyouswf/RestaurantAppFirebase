@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/backgroundmain1"
+    tools:context=".SignInActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/phoneText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="رقم الجوال"
+            android:inputType="phone"
+            android:maxLength="10"
+            android:text="8126827296"
+            android:textAlignment="center"
+            android:textColor="#fff"
+            android:textColorHint="#fff"
+            android:textDirection="rtl"
+            android:textSize="34sp" />
+
+<!--        <EditText-->
+<!--            android:id="@+id/nameText"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:hint="الأسم"-->
+<!--            android:maxLength="10"-->
+<!--            android:textAlignment="center"-->
+<!--            android:textColor="#fff"-->
+<!--            android:textColorHint="#fff"-->
+<!--            android:textDirection="rtl"-->
+<!--            android:textSize="34sp" />-->
+
+        <EditText
+            android:id="@+id/passText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="الرقم السري"
+            android:inputType="textPassword"
+            android:maxLength="10"
+            android:textAlignment="center"
+            android:textColor="#fff"
+            android:text="123"
+            android:textColorHint="#fff"
+            android:textDirection="rtl"
+            android:textSize="34sp" />
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+>
+
+        <Button
+            android:id="@+id/signIn2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/signin_button"
+            android:fontFamily="@font/ebnile"
+            android:text="دخول"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+        <Button
+            android:id="@+id/btnGuest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_alignParentBottom="true"
+            android:background="@drawable/signin_button"
+            android:fontFamily="@font/ebnile"
+            android:text="زائر"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
+    <ProgressBar
+        android:id="@+id/waiting"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_centerInParent="true"/>
+</RelativeLayout>
