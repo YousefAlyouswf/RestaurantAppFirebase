@@ -52,20 +52,26 @@ public class SignupActivity extends AppCompatActivity {
                 reference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                        //Check if user exist
-                        if (dataSnapshot.child(phoneText.getText().toString()).exists()) {
-                            Toast.makeText(SignupActivity.this, "الرقم مسجل مسبقا", Toast.LENGTH_SHORT).show();
+                        if (phoneText.getText().toString().equals("")||passText.getText().toString().equals("")||nameText.getText().toString().equals("")){
+                            Toast.makeText(SignupActivity.this, "يجب ادخال البيانات", Toast.LENGTH_SHORT).show();
+                        }else{
+                            progressBar.setVisibility(View.VISIBLE);
+                            //Check if user exist
+                            if (dataSnapshot.child(phoneText.getText().toString()).exists()) {
+                                Toast.makeText(SignupActivity.this, "الرقم مسجل مسبقا", Toast.LENGTH_SHORT).show();
 
-                        } else {
-                            User user = new User(nameText.getText().toString(), passText.getText().toString());
-                            reference.child(phoneText.getText().toString()).setValue(user);
-                            Toast.makeText(SignupActivity.this, "تم التسجيل بنجاح", Toast.LENGTH_SHORT).show();
-                            Common.currentUser=user;
-                            Intent intent = new Intent(SignupActivity.this,Home.class);
-                            startActivity(intent);
+                            } else {
+                                User user = new User(nameText.getText().toString(), passText.getText().toString(), phoneText.getText().toString());
+                                reference.child(phoneText.getText().toString()).setValue(user);
+                                Toast.makeText(SignupActivity.this, "تم التسجيل بنجاح", Toast.LENGTH_SHORT).show();
+                                Common.currentUser=user;
+                                Intent intent = new Intent(SignupActivity.this,Home.class);
+                                startActivity(intent);
+                            }
+
+                            progressBar.setVisibility(View.INVISIBLE);
                         }
 
-                        progressBar.setVisibility(View.INVISIBLE);
 
 
                     }

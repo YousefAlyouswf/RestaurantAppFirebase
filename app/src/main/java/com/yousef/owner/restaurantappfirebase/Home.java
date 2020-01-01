@@ -1,5 +1,6 @@
 package com.yousef.owner.restaurantappfirebase;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -11,9 +12,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.yousef.owner.restaurantappfirebase.Interface.ItemClickListener;
 import com.yousef.owner.restaurantappfirebase.Model.Category;
+import com.yousef.owner.restaurantappfirebase.ViewHolder.menuAdapter;
 import com.yousef.owner.restaurantappfirebase.common.Common;
 
 import androidx.annotation.NonNull;
@@ -29,17 +33,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class Home extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    private CollectionReference menuRef = db.collection("category");
-    private menuAdapter adapter;
-
-//    FirebaseDatabase firebaseDatabase;
-//    DatabaseReference category;
-
     TextView UserName;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
-
+    FirestoreRecyclerOptions<Category> recyclerOptions;
+    private CollectionReference menuRef = db.collection("category");
+    private menuAdapter adapter;
     private AppBarConfiguration mAppBarConfiguration;
 
     @Override
@@ -49,11 +48,6 @@ public class Home extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Menu");
         setSupportActionBar(toolbar);
-
-
-//        //Firebase init
-//        firebaseDatabase = FirebaseDatabase.getInstance();
-//        category = firebaseDatabase.getReference("category");
 
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -84,16 +78,14 @@ public class Home extends AppCompatActivity {
         UserName.setText(Common.currentUser.getName());
 
 
-
-
         loadMenu();
     }
 
     private void loadMenu() {
-        Query query = menuRef.orderBy("name",Query.Direction.DESCENDING);
+        Query query = menuRef.orderBy("name");
 
 
-        FirestoreRecyclerOptions<Category> recyclerOptions = new FirestoreRecyclerOptions.Builder<Category>().setQuery(query,Category.class).build();
+        recyclerOptions = new FirestoreRecyclerOptions.Builder<Category>().setQuery(query, Category.class).build();
         adapter = new menuAdapter(recyclerOptions);
 
         //RecyclerView LayoutManger
@@ -103,7 +95,22 @@ public class Home extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
 
+        adapter.setItemClickListener(new ItemClickListener() {
+            @Override
+            public void OnClick(DocumentSnapshot documentSnapshot, int position, boolean isLongClick) {
+                String id = documentSnapshot.getId();
+
+                String path = documentSnapshot.getReference().getPath();
+                Intent intent = new Intent(Home.this, FoodList.class);
+
+                intent.putExtra("CategoryId", id);
+                intent.putExtra("CategoryPath", path);
+                startActivity(intent);
+            }
+        });
+
     }
+
 
     @Override
     protected void onStart() {
@@ -136,5 +143,5 @@ public class Home extends AppCompatActivity {
                 || super.onSupportNavigateUp();
     }
 
-
 }
+

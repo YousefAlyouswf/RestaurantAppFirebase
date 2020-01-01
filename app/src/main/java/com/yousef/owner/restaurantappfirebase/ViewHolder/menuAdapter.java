@@ -1,4 +1,4 @@
-package com.yousef.owner.restaurantappfirebase;
+package com.yousef.owner.restaurantappfirebase.ViewHolder;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,12 +11,14 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.squareup.picasso.Picasso;
 import com.yousef.owner.restaurantappfirebase.Interface.ItemClickListener;
 import com.yousef.owner.restaurantappfirebase.Model.Category;
+import com.yousef.owner.restaurantappfirebase.R;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class menuAdapter extends FirestoreRecyclerAdapter<Category, menuAdapter.menuHolder> {
 
+    private ItemClickListener itemClickListener;
 
     public menuAdapter(@NonNull FirestoreRecyclerOptions<Category> options) {
         super(options);
@@ -27,13 +29,16 @@ public class menuAdapter extends FirestoreRecyclerAdapter<Category, menuAdapter.
 
         holder.textViewName.setText(model.getName());
         Picasso.get().load(model.getImage()).into(holder.imageViewMenu);
-        final Category ClickItem = model;
-        holder.setItemClickListener(new ItemClickListener() {
-            @Override
-            public void OnClick(View view, int position, boolean isLongClick) {
-
-            }
-        });
+//        final Category ClickItem = model;
+//        holder.setItemClickListener(new ItemClickListener() {
+//            @Override
+//            public void OnClick(DocumentSnapshot view, int position, boolean isLongClick) {
+//              //  Intent intent = new Intent(getApplicationContext, FoodList.class);
+//                Home home = new Home();
+//
+//                home.intent();
+//            }
+//        });
 
     }
 
@@ -44,10 +49,14 @@ public class menuAdapter extends FirestoreRecyclerAdapter<Category, menuAdapter.
         return new menuHolder(view);
     }
 
+    public void setItemClickListener(ItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+    }
+
     class menuHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView textViewName;
         ImageView imageViewMenu;
-        private ItemClickListener itemClickListener;
+
 
         public menuHolder(View itemView) {
             super(itemView);
@@ -56,13 +65,14 @@ public class menuAdapter extends FirestoreRecyclerAdapter<Category, menuAdapter.
             itemView.setOnClickListener(this);
         }
 
-        public void setItemClickListener(ItemClickListener itemClickListener) {
-            this.itemClickListener = itemClickListener;
-        }
 
         @Override
         public void onClick(View v) {
-            itemClickListener.OnClick(v, getAdapterPosition(), false);
+            // itemClickListener.OnClick(v, getAdapterPosition(), false);
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION && itemClickListener != null) {
+                itemClickListener.OnClick(getSnapshots().getSnapshot(position), position, false);
+            }
         }
 
     }

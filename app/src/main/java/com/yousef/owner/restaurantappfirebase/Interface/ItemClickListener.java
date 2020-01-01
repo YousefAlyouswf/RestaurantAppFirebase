@@ -1,8 +1,8 @@
 package com.yousef.owner.restaurantappfirebase.Interface;
 
-import android.view.View;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 public interface ItemClickListener {
 
-    void OnClick(View view, int position, boolean isLongClick);
+    void OnClick(DocumentSnapshot view, int position, boolean isLongClick);
 }

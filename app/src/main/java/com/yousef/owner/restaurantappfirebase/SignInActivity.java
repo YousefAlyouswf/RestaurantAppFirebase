@@ -53,6 +53,7 @@ public class SignInActivity extends AppCompatActivity {
             }
         });
 
+
         btnSignin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,35 +63,43 @@ public class SignInActivity extends AppCompatActivity {
                 animation1.setFillAfter(true);
                 v.startAnimation(animation1);
 
-                progressBar.setVisibility(View.VISIBLE);
+
                 reference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                        //Check if user exist
-                        if (dataSnapshot.child(phoneEText.getText().toString()).exists()) {
-                            //Get user info
-                            User user = dataSnapshot.child(phoneEText.getText().toString()).getValue(User.class);
-
-                            if (user.getPassword().equals(passEText.getText().toString())) {
-                                Intent intent = new Intent(SignInActivity.this,Home.class);
-                                Common.currentUser=user;
-                                startActivity(intent);
-                                finish();
-                            } else {
-                                Toast.makeText(SignInActivity.this, "المعلومات خاطئة", Toast.LENGTH_SHORT).show();
-                            }
+                        if (phoneEText.getText().toString().equals("") || passEText.getText().toString().equals("")) {
+                            Toast.makeText(SignInActivity.this, "أدخل رقم الجوال والرقم السري", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(SignInActivity.this, "الرقم غير مسجل", Toast.LENGTH_SHORT).show();
-                        }
-                        final Handler handler = new Handler();
-                        handler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                progressBar.setVisibility(View.INVISIBLE);
+                            progressBar.setVisibility(View.VISIBLE);
+                            //Check if user exist
+                            if (dataSnapshot.child(phoneEText.getText().toString()).exists()) {
+                                //Get user info
+                                User user = dataSnapshot.child(phoneEText.getText().toString()).getValue(User.class);
+                                assert user != null;
+                                user.setPhone(phoneEText.getText().toString());
+                                if (user.getPassword().equals(passEText.getText().toString())) {
 
+                                    Intent intent = new Intent(SignInActivity.this, Home.class);
+                                    Common.currentUser = user;
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    Toast.makeText(SignInActivity.this, "المعلومات خاطئة", Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                Toast.makeText(SignInActivity.this, "الرقم غير مسجل", Toast.LENGTH_SHORT).show();
                             }
+                            final Handler handler = new Handler();
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    progressBar.setVisibility(View.INVISIBLE);
 
-                        }, 500);
+                                }
+
+                            }, 500);
+
+                        }
 
 
                     }
@@ -105,8 +114,6 @@ public class SignInActivity extends AppCompatActivity {
 
 
     }
-
-
 
 
 }
