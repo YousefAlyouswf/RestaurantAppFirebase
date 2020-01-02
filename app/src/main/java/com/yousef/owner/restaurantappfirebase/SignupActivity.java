@@ -61,7 +61,7 @@ public class SignupActivity extends AppCompatActivity {
                                 Toast.makeText(SignupActivity.this, "الرقم مسجل مسبقا", Toast.LENGTH_SHORT).show();
 
                             } else {
-                                User user = new User(nameText.getText().toString(), passText.getText().toString(), phoneText.getText().toString());
+                                User user = new User(nameText.getText().toString(), passText.getText().toString());
                                 reference.child(phoneText.getText().toString()).setValue(user);
                                 Toast.makeText(SignupActivity.this, "تم التسجيل بنجاح", Toast.LENGTH_SHORT).show();
                                 Common.currentUser=user;
