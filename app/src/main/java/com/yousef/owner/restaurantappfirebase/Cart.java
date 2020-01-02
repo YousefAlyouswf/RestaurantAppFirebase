@@ -41,6 +41,8 @@ public class Cart extends AppCompatActivity {
     List<Order> cart;
     CartAdapter adapter;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -136,7 +138,7 @@ public class Cart extends AppCompatActivity {
             totalInt += (Integer.parseInt(order.getPrice())) * (Integer.parseInt(order.getQuantity()));
         }
         //Calculate total Price
-        Locale locale = new Locale("en", "SA");
+        Locale locale = new Locale("ar", "SA");
 
         NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
 

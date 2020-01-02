@@ -2,14 +2,12 @@ package com.yousef.owner.restaurantappfirebase.ViewHolder;
 
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.amulyakhare.textdrawable.TextDrawable;
 import com.yousef.owner.restaurantappfirebase.Interface.ItemClickListener;
 import com.yousef.owner.restaurantappfirebase.Model.Order;
 import com.yousef.owner.restaurantappfirebase.R;
@@ -43,8 +41,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull CartViewHolder holder, int position) {
-        TextDrawable textDrawable = TextDrawable.builder().buildRound("" + orderList.get(position), Color.RED);
-        holder.img_cart_count.setImageDrawable(textDrawable);
+//        TextDrawable textDrawable = TextDrawable.builder().buildRound("" + orderList.get(position), Color.RED);
+//        holder.img_cart_count.setImageDrawable(textDrawable);
 
         Locale locale = new Locale("ar", "SA");
 
