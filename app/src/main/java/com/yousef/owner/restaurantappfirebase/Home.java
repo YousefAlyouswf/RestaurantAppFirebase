@@ -6,6 +6,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -31,12 +32,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class Home extends AppCompatActivity {
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    FirebaseFirestore db;
     TextView UserName;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     FirestoreRecyclerOptions<Category> recyclerOptions;
-    private CollectionReference menuRef = db.collection("category");
+    private CollectionReference menuRef;
     private menuAdapter adapter;
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -44,11 +45,14 @@ public class Home extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+
         final Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("Menu");
         setSupportActionBar(toolbar);
 
-
+        db = FirebaseFirestore.getInstance();
+        menuRef = db.collection("category");
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,17 +75,20 @@ public class Home extends AppCompatActivity {
         NavigationUI.setupWithNavController(navigationView, navController);
 
 
+        if (Common.isNetworkAvailable(getBaseContext())) {
+            //set name for user
+            View headerView = navigationView.getHeaderView(0);
+            UserName = headerView.findViewById(R.id.username);
+            UserName.setText(Common.currentUser.getName());
+            loadMenu();
+        } else {
+            Toast.makeText(Home.this, "لا يوجد إتصال بالانترنت", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Home.this, MainActivity.class);
+            startActivity(intent);
+        }
 
 
-        //set name for user
-        View headerView = navigationView.getHeaderView(0);
-        UserName = headerView.findViewById(R.id.username);
-        UserName.setText(Common.currentUser.getName());
-
-
-        loadMenu();
     }
-
 
 
     private void loadMenu() {
@@ -97,7 +104,6 @@ public class Home extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setAdapter(adapter);
-
 
 
         adapter.setItemClickListener(new ItemClickListener() {
@@ -118,16 +124,27 @@ public class Home extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        super.onStart();
-        adapter.startListening();
+
+        if (Common.isNetworkAvailable(getBaseContext())) {
+            super.onStart();
+            adapter.startListening();
+        } else {
+            Toast.makeText(Home.this, "لا يوجد إتصال بالانترنت", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Home.this, MainActivity.class);
+            startActivity(intent);
+        }
     }
 
     @Override
     protected void onStop() {
-        super.onStop();
-        adapter.stopListening();
-    }
 
+        if (Common.isNetworkAvailable(getBaseContext())) {
+            super.onStop();
+            adapter.startListening();
+        } else {
+            Toast.makeText(Home.this, "لا يوجد إتصال بالانترنت", Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
     @Override

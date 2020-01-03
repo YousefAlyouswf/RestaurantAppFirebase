@@ -1,9 +1,11 @@
 package com.yousef.owner.restaurantappfirebase;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -34,17 +36,22 @@ public class OrderStatus extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_status);
 
-        //Init Firebase
-        database = FirebaseDatabase.getInstance();
-        reference = database.getReference("Requests");
+//Init Firebase
+            database = FirebaseDatabase.getInstance();
+            reference = database.getReference("Requests");
 
 
-        recyclerView = findViewById(R.id.listOrder);
-        recyclerView.setHasFixedSize(true);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
-
-        loadOrders(Common.currentUser.getPhone());
+            recyclerView = findViewById(R.id.listOrder);
+            recyclerView.setHasFixedSize(true);
+            layoutManager = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(layoutManager);
+            if (Common.isNetworkAvailable(getBaseContext())) {
+            loadOrders(Common.currentUser.getPhone());
+        } else {
+            Toast.makeText(OrderStatus.this, "لا يوجد إتصال بالانترنت", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(OrderStatus.this,MainActivity.class);
+                startActivity(intent);
+        }
 
 
     }
@@ -87,6 +94,7 @@ public class OrderStatus extends AppCompatActivity {
         }
 
     }
+
     @Override
     protected void onStart() {
         super.onStart();

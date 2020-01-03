@@ -49,38 +49,43 @@ public class SignupActivity extends AppCompatActivity {
                 animation1.setFillAfter(true);
                 v.startAnimation(animation1);
 
-                reference.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                        if (phoneText.getText().toString().equals("")||passText.getText().toString().equals("")||nameText.getText().toString().equals("")){
-                            Toast.makeText(SignupActivity.this, "يجب ادخال البيانات", Toast.LENGTH_SHORT).show();
-                        }else{
-                            progressBar.setVisibility(View.VISIBLE);
-                            //Check if user exist
-                            if (dataSnapshot.child(phoneText.getText().toString()).exists()) {
-                                Toast.makeText(SignupActivity.this, "الرقم مسجل مسبقا", Toast.LENGTH_SHORT).show();
-
+                if (Common.isNetworkAvailable(getBaseContext())) {
+                    reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                            if (phoneText.getText().toString().equals("") || passText.getText().toString().equals("") || nameText.getText().toString().equals("")) {
+                                Toast.makeText(SignupActivity.this, "يجب ادخال البيانات", Toast.LENGTH_SHORT).show();
                             } else {
-                                User user = new User(nameText.getText().toString(), passText.getText().toString());
-                                reference.child(phoneText.getText().toString()).setValue(user);
-                                Toast.makeText(SignupActivity.this, "تم التسجيل بنجاح", Toast.LENGTH_SHORT).show();
-                                Common.currentUser=user;
-                                Intent intent = new Intent(SignupActivity.this,Home.class);
-                                startActivity(intent);
+                                progressBar.setVisibility(View.VISIBLE);
+                                //Check if user exist
+                                if (dataSnapshot.child(phoneText.getText().toString()).exists()) {
+                                    Toast.makeText(SignupActivity.this, "الرقم مسجل مسبقا", Toast.LENGTH_SHORT).show();
+
+                                } else {
+                                    User user = new User(nameText.getText().toString(), passText.getText().toString());
+                                    reference.child(phoneText.getText().toString()).setValue(user);
+                                    Toast.makeText(SignupActivity.this, "تم التسجيل بنجاح", Toast.LENGTH_SHORT).show();
+                                    Common.currentUser = user;
+                                    Intent intent = new Intent(SignupActivity.this, Home.class);
+                                    startActivity(intent);
+                                }
+
+                                progressBar.setVisibility(View.INVISIBLE);
                             }
 
-                            progressBar.setVisibility(View.INVISIBLE);
+
                         }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                        }
+                    });
+                } else {
+                    Toast.makeText(SignupActivity.this, "لا يوجد إتصال بالانترنت", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(SignupActivity.this,MainActivity.class);
+                    startActivity(intent);
+                }
 
 
             }

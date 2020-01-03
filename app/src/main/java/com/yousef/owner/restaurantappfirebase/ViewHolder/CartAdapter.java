@@ -20,7 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-
 public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder> {
 
     private List<Order> orderList;
@@ -59,7 +58,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         return orderList.size();
     }
 
-   class CartViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class CartViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
 
         TextView cart_name, cart_price;
@@ -72,7 +71,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
             cart_name = itemView.findViewById(R.id.cart_item_name);
             cart_price = itemView.findViewById(R.id.cart_item_Price);
-            img_cart_count = itemView.findViewById(R.id.cart_item_count);
+
         }
 
         public void setCart_name(TextView cart_name) {
@@ -83,6 +82,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         public void onClick(View v) {
 
         }
+
+
     }
 
 }

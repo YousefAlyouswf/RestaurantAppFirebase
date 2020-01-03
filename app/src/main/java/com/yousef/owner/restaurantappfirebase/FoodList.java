@@ -2,6 +2,7 @@ package com.yousef.owner.restaurantappfirebase;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.firestore.CollectionReference;
@@ -11,6 +12,7 @@ import com.google.firebase.firestore.Query;
 import com.yousef.owner.restaurantappfirebase.Interface.ItemClickListener;
 import com.yousef.owner.restaurantappfirebase.Model.Food;
 import com.yousef.owner.restaurantappfirebase.ViewHolder.foodAdapter;
+import com.yousef.owner.restaurantappfirebase.common.Common;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,7 +35,11 @@ public class FoodList extends AppCompatActivity {
         categoryID = getIntent().getStringExtra("CategoryId");
         path = getIntent().getStringExtra("CategoryPath");
         menuRef=db.collection("Foods");
-        loadFood();
+
+
+            loadFood();
+
+
     }
 
     private void loadFood() {
@@ -42,7 +48,15 @@ public class FoodList extends AppCompatActivity {
         if(getIntent() != null){
             categoryID = getIntent().getStringExtra("CategoryId");
             if(!categoryID.isEmpty()&& categoryID != null){
-                loadListFood(categoryID);
+
+                if (Common.isNetworkAvailable(getBaseContext())){
+                    loadListFood(categoryID);
+                }else {
+                    Toast.makeText(FoodList.this, "لا يوجد إتصال بالانترنت", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(FoodList.this,MainActivity.class);
+                    startActivity(intent);
+                }
+
             }
         }
 
@@ -83,7 +97,14 @@ public class FoodList extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        adapter.startListening();
+        if (Common.isNetworkAvailable(getBaseContext())){
+            adapter.startListening();
+        }else {
+            Toast.makeText(FoodList.this, "لا يوجد إتصال بالانترنت", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(FoodList.this,MainActivity.class);
+            startActivity(intent);
+        }
+
     }
 
     @Override

@@ -1,13 +1,13 @@
 package com.yousef.owner.restaurantappfirebase;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
@@ -22,8 +22,10 @@ import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,47 +37,66 @@ public class Cart extends AppCompatActivity {
     FirebaseDatabase database;
     DatabaseReference request;
 
-    TextView total;
+
     Button placeOrder;
 
     List<Order> cart;
     CartAdapter adapter;
+    ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT) {
+        @Override
+        public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+            return false;
+        }
 
+        @Override
+        public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
 
+            deleteItem(viewHolder.getAdapterPosition());
+            adapter.notifyDataSetChanged();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
+        if (Common.isNetworkAvailable(getBaseContext())) {
+            database = FirebaseDatabase.getInstance();
+            request = database.getReference("Requests");
 
-        database = FirebaseDatabase.getInstance();
-        request = database.getReference("Requests");
+            //init
+            recyclerView = findViewById(R.id.listCart);
+            recyclerView.setHasFixedSize(true);
+            manager = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(manager);
 
-        //init
-        recyclerView = findViewById(R.id.listCart);
-        recyclerView.setHasFixedSize(true);
-        manager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(manager);
+            //Text and Button
+            placeOrder = findViewById(R.id.btnPlaceOrder);
 
-        //Text and Button
-        total = findViewById(R.id.total);
-        placeOrder = findViewById(R.id.btnPlaceOrder);
+            loadListView();
 
-        loadListView();
+            placeOrder.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlphaAnimation animation1 = new AlphaAnimation(0.2f, 1.0f);
+                    animation1.setDuration(10);
+                    animation1.setStartOffset(100);
+                    animation1.setFillAfter(true);
+                    v.startAnimation(animation1);
+                    if (cart.size() > 0) {
+                        showAlertDailog();
+                    } else {
+                        Toast.makeText(Cart.this, "السلة فارغه", Toast.LENGTH_SHORT).show();
+                    }
 
-        placeOrder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlphaAnimation animation1 = new AlphaAnimation(0.2f, 1.0f);
-                animation1.setDuration(10);
-                animation1.setStartOffset(100);
-                animation1.setFillAfter(true);
-                v.startAnimation(animation1);
 
-                showAlertDailog();
-
-            }
-        });
+                }
+            });
+        } else {
+            Toast.makeText(Cart.this, "لا يوجد إتصال بالانترنت", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(Cart.this, MainActivity.class);
+            startActivity(intent);
+        }
 
 
     }
@@ -102,7 +123,7 @@ public class Cart extends AppCompatActivity {
                         Common.currentUser.getPhone(),
                         Common.currentUser.getName(),
                         editAddress.getText().toString(),
-                        total.getText().toString(),
+                        placeOrder.getText().toString(),
                         cart
                 );
 
@@ -131,6 +152,8 @@ public class Cart extends AppCompatActivity {
 
         cart = new Database(this).getCarts();
         adapter = new CartAdapter(cart, Cart.this);
+        adapter.notifyDataSetChanged();
+        new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
         recyclerView.setAdapter(adapter);
 
         int totalInt = 0;
@@ -142,8 +165,22 @@ public class Cart extends AppCompatActivity {
 
         NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
 
-        total.setText(fmt.format(totalInt));
-
+        //total.setText();
+        placeOrder.setText(fmt.format(totalInt));
 
     }
+
+
+    private void deleteItem(int order) {
+        cart.remove(order);
+
+        new Database(this).cleanCart();
+
+        for (Order item : cart) {
+            new Database(this).addToCart(item);
+        }
+        loadListView();
+    }
+
+
 }

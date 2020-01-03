@@ -25,7 +25,7 @@ public class SignInActivity extends AppCompatActivity {
 
 
     EditText phoneEText, passEText;
-    Button btnSignin, btnGuest;
+    Button btnSignin;
     ProgressBar progressBar;
 
     @Override
@@ -36,22 +36,10 @@ public class SignInActivity extends AppCompatActivity {
         phoneEText = findViewById(R.id.phoneText);
         passEText = findViewById(R.id.passText);
         btnSignin = findViewById(R.id.signIn2);
-        btnGuest = findViewById(R.id.btnGuest);
         progressBar = findViewById(R.id.waiting);
         progressBar.setVisibility(View.INVISIBLE);
         FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
         final DatabaseReference reference = firebaseDatabase.getReference("User");
-
-        btnGuest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlphaAnimation animation1 = new AlphaAnimation(0.2f, 1.0f);
-                animation1.setDuration(10);
-                animation1.setStartOffset(100);
-                animation1.setFillAfter(true);
-                v.startAnimation(animation1);
-            }
-        });
 
 
         btnSignin.setOnClickListener(new View.OnClickListener() {
@@ -62,53 +50,60 @@ public class SignInActivity extends AppCompatActivity {
                 animation1.setStartOffset(100);
                 animation1.setFillAfter(true);
                 v.startAnimation(animation1);
-
-
-                reference.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                        if (phoneEText.getText().toString().equals("") || passEText.getText().toString().equals("")) {
-                            Toast.makeText(SignInActivity.this, "أدخل رقم الجوال والرقم السري", Toast.LENGTH_SHORT).show();
-                        } else {
-                            progressBar.setVisibility(View.VISIBLE);
-                            //Check if user exist
-                            if (dataSnapshot.child(phoneEText.getText().toString()).exists()) {
-                                //Get user info
-                                User user = dataSnapshot.child(phoneEText.getText().toString()).getValue(User.class);
-                                assert user != null;
-                                user.setPhone(phoneEText.getText().toString());
-                                if (user.getPassword().equals(passEText.getText().toString())) {
-
-                                    Intent intent = new Intent(SignInActivity.this, Home.class);
-                                    Common.currentUser = user;
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    Toast.makeText(SignInActivity.this, "المعلومات خاطئة", Toast.LENGTH_SHORT).show();
-                                }
+                if (Common.isNetworkAvailable(getBaseContext())) {
+                    reference.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                            if (phoneEText.getText().toString().equals("") || passEText.getText().toString().equals("")) {
+                                Toast.makeText(SignInActivity.this, "أدخل رقم الجوال والرقم السري", Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(SignInActivity.this, "الرقم غير مسجل", Toast.LENGTH_SHORT).show();
-                            }
-                            final Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressBar.setVisibility(View.INVISIBLE);
+                                progressBar.setVisibility(View.VISIBLE);
+                                //Check if user exist
+                                if (dataSnapshot.child(phoneEText.getText().toString()).exists()) {
+                                    //Get user info
+                                    User user = dataSnapshot.child(phoneEText.getText().toString()).getValue(User.class);
+                                    assert user != null;
+                                    user.setPhone(phoneEText.getText().toString());
+                                    if (user.getPassword().equals(passEText.getText().toString())) {
 
+                                        Intent intent = new Intent(SignInActivity.this, Home.class);
+                                        Common.currentUser = user;
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(SignInActivity.this, "المعلومات خاطئة", Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    Toast.makeText(SignInActivity.this, "الرقم غير مسجل", Toast.LENGTH_SHORT).show();
                                 }
+                                final Handler handler = new Handler();
+                                handler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressBar.setVisibility(View.INVISIBLE);
 
-                            }, 500);
+                                    }
+
+                                }, 500);
+
+                            }
+
 
                         }
 
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                    }
+                        }
+                    });
+                } else {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Toast.makeText(SignInActivity.this, "لا يوجد إتصال بالانترنت", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(SignInActivity.this,MainActivity.class);
+                    startActivity(intent);
+                }
 
-                    }
-                });
+
             }
         });
 

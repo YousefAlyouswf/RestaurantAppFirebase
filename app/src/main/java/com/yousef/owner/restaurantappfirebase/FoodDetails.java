@@ -1,5 +1,6 @@
 package com.yousef.owner.restaurantappfirebase;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,6 +18,7 @@ import com.squareup.picasso.Picasso;
 import com.yousef.owner.restaurantappfirebase.Database.Database;
 import com.yousef.owner.restaurantappfirebase.Model.Food;
 import com.yousef.owner.restaurantappfirebase.Model.Order;
+import com.yousef.owner.restaurantappfirebase.common.Common;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -40,40 +42,46 @@ public class FoodDetails extends AppCompatActivity {
         setContentView(R.layout.activity_food_details);
 
         //init textAndButtons
+        if (Common.isNetworkAvailable(getBaseContext())){
+            numberButton = findViewById(R.id.numberBtn);
+            foodDes = findViewById(R.id.food_descritipn);
+            foodName = findViewById(R.id.food_name);
+            foodPrice = findViewById(R.id.food_price);
+            foodImage = findViewById(R.id.imgfoodDetails);
+            collapsingToolbarLayout = findViewById(R.id.collapsing);
+            btnCart = findViewById(R.id.btnCart2);
+            collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.expandedAppBar);
+            collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.collapsAppBar);
+            // toolbar = findViewById(R.id.toolBarDetails);
+            loadFood();
 
-        numberButton = findViewById(R.id.numberBtn);
-        foodDes = findViewById(R.id.food_descritipn);
-        foodName = findViewById(R.id.food_name);
-        foodPrice = findViewById(R.id.food_price);
-        foodImage = findViewById(R.id.imgfoodDetails);
-        collapsingToolbarLayout = findViewById(R.id.collapsing);
-        btnCart = findViewById(R.id.btnCart2);
-        collapsingToolbarLayout.setExpandedTitleTextAppearance(R.style.expandedAppBar);
-        collapsingToolbarLayout.setCollapsedTitleTextAppearance(R.style.collapsAppBar);
-        // toolbar = findViewById(R.id.toolBarDetails);
-        loadFood();
 
+            btnCart.setOnClickListener(new View.OnClickListener() {
 
-        btnCart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    try {
 
-            @Override
-            public void onClick(View v) {
-                try {
-
-                    new Database(getBaseContext()).addToCart(new Order(
-                            foodID,
-                            currentFood.getName(),
-                            numberButton.getNumber(),
-                            currentFood.getPrice(),
-                            currentFood.getDiscount()
-                    ));
-                    Toast.makeText(FoodDetails.this, "تم إظافة الطلب", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                    Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
+                        new Database(getBaseContext()).addToCart(new Order(
+                                foodID,
+                                currentFood.getName(),
+                                numberButton.getNumber(),
+                                currentFood.getPrice(),
+                                currentFood.getDiscount()
+                        ));
+                        Toast.makeText(FoodDetails.this, "تم إظافة الطلب", Toast.LENGTH_SHORT).show();
+                    } catch (Exception e) {
+                        Toast.makeText(getApplicationContext(), "ERROR", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
 
-        });
+            });
+        }else {
+            Toast.makeText(FoodDetails.this, "لا يوجد إتصال بالانترنت", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(FoodDetails.this,MainActivity.class);
+            startActivity(intent);
+        }
+
 
 
     }
