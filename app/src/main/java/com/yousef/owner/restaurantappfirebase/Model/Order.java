@@ -7,6 +7,7 @@ public class Order {
     private String price;
     private String discount;
 
+
     public Order() {
     }
 
@@ -16,6 +17,7 @@ public class Order {
         this.quantity = quantity;
         this.price = price;
         this.discount = discount;
+     
     }
 
     public String getProdectID() {
@@ -57,4 +59,6 @@ public class Order {
     public void setDiscount(String discount) {
         this.discount = discount;
     }
+
+
 }

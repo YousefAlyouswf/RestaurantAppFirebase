@@ -10,6 +10,7 @@ public class Requests {
     private String total;
     private List<Order> foods;
     private String status;
+    private String thisID=String.valueOf(System.currentTimeMillis());
 
     public Requests() {
     }

@@ -10,8 +10,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.yousef.owner.restaurantappfirebase.Database.Database;
 import com.yousef.owner.restaurantappfirebase.Model.Order;
 import com.yousef.owner.restaurantappfirebase.Model.Requests;
@@ -34,10 +34,10 @@ public class Cart extends AppCompatActivity {
     RecyclerView recyclerView;
     RecyclerView.LayoutManager manager;
 
-    FirebaseDatabase database;
-    DatabaseReference request;
+    FirebaseFirestore database;
+    CollectionReference request;
 
-
+String thisID=String.valueOf(System.currentTimeMillis());
     Button placeOrder;
 
     List<Order> cart;
@@ -61,8 +61,8 @@ public class Cart extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cart);
         if (Common.isNetworkAvailable(getBaseContext())) {
-            database = FirebaseDatabase.getInstance();
-            request = database.getReference("Requests");
+            database = FirebaseFirestore.getInstance();
+            request = database.collection("Requests");
 
             //init
             recyclerView = findViewById(R.id.listCart);
@@ -128,12 +128,12 @@ public class Cart extends AppCompatActivity {
                 );
 
                 //Submit to firebase
-                request.child(String.valueOf(System.currentTimeMillis())).setValue(requests);
+                request.document(String.valueOf(System.currentTimeMillis())).set(requests);
 
                 //Delete Cart List
                 new Database(Cart.this).cleanCart();
 
-                Toast.makeText(Cart.this, "Thank You", Toast.LENGTH_SHORT).show();
+                Toast.makeText(Cart.this, "يتم الان تحضير طلبك", Toast.LENGTH_SHORT).show();
                 finish();
 
             }

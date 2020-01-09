@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RestaurantAppFirebase</string>
+    <string name="app_name">المطعم الرهيب</string>
     <string name="title_activity_maps">Map</string>
     <string name="logoText">المطبخ العربي من أكثر المطابخ شهرةً في العالم بأسره إذ يتميّز بأكلاته الشهية وحلوياته اللذيذة على أنواعها</string>
     <string name="signup">SignUp</string>

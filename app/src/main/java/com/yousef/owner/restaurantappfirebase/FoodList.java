@@ -32,6 +32,7 @@ public class FoodList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food_list);
+
         categoryID = getIntent().getStringExtra("CategoryId");
         path = getIntent().getStringExtra("CategoryPath");
         menuRef=db.collection("Foods");

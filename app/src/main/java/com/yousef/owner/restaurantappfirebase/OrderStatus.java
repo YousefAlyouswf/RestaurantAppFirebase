@@ -2,20 +2,15 @@ package com.yousef.owner.restaurantappfirebase;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.yousef.owner.restaurantappfirebase.Model.Requests;
-import com.yousef.owner.restaurantappfirebase.ViewHolder.OrderViewHolder;
+import com.yousef.owner.restaurantappfirebase.ViewHolder.OrderAdapter;
 import com.yousef.owner.restaurantappfirebase.common.Common;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,13 +18,13 @@ import androidx.recyclerview.widget.RecyclerView;
 public class OrderStatus extends AppCompatActivity {
 
 
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
+    private CollectionReference orderRef;
+    private OrderAdapter adapter;
 
-    FirebaseRecyclerAdapter adapter;
 
-    FirebaseDatabase database;
-    DatabaseReference reference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,49 +32,52 @@ public class OrderStatus extends AppCompatActivity {
         setContentView(R.layout.activity_order_status);
 
 //Init Firebase
-            database = FirebaseDatabase.getInstance();
-            reference = database.getReference("Requests");
+
+        orderRef = db.collection("Requests");
 
 
-            recyclerView = findViewById(R.id.listOrder);
-            recyclerView.setHasFixedSize(true);
-            layoutManager = new LinearLayoutManager(this);
-            recyclerView.setLayoutManager(layoutManager);
-            if (Common.isNetworkAvailable(getBaseContext())) {
+        recyclerView = findViewById(R.id.listOrder);
+        recyclerView.setHasFixedSize(true);
+        layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        if (Common.isNetworkAvailable(getBaseContext())) {
             loadOrders(Common.currentUser.getPhone());
         } else {
             Toast.makeText(OrderStatus.this, "لا يوجد إتصال بالانترنت", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(OrderStatus.this,MainActivity.class);
-                startActivity(intent);
+            Intent intent = new Intent(OrderStatus.this, MainActivity.class);
+            startActivity(intent);
         }
 
 
     }
 
+
     private void loadOrders(String phone) {
 
-        FirebaseRecyclerOptions<Requests> options =
-                new FirebaseRecyclerOptions.Builder<Requests>()
-                        .setQuery(reference.orderByChild("phone").equalTo(phone), Requests.class)
+        FirestoreRecyclerOptions<Requests> options =
+                new FirestoreRecyclerOptions.Builder<Requests>()
+                        .setQuery(orderRef.whereEqualTo("phone", phone), Requests.class)
                         .build();
 
+        adapter = new OrderAdapter(options);
 
-        adapter = new FirebaseRecyclerAdapter<Requests, OrderViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull OrderViewHolder orderViewHolder, int i, @NonNull Requests requests) {
-                orderViewHolder.txtOrderid.setText(adapter.getRef(i).getKey());
-                orderViewHolder.txtOrderstatus.setText(convertCodeToStatus(requests.getStatus()));
-                orderViewHolder.txtOrderAddress.setText(requests.getAddress());
-                orderViewHolder.txtOrderphone.setText(requests.getPhone());
-            }
-
-            @NonNull
-            @Override
-            public OrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.order_layout, parent, false);
-                return new OrderViewHolder(view);
-            }
-        };
+//        adapter = new FirestoreRecyclerAdapter<Requests, OrderAdapter.orderHolder>(options) {
+//            @Override
+//            protected void onBindViewHolder(@NonNull OrderAdapter.orderHolder orderHolder, int i, @NonNull Requests requests) {
+//                orderHolder.txtOrderid.setText(adapter.getSnapshots().getSnapshot(i).getId());
+//                orderHolder.txtOrderstatus.setText(convertCodeToStatus(requests.getStatus()));
+//                orderHolder.txtOrderAddress.setText(requests.getAddress());
+//                orderHolder.txtOrderphone.setText(requests.getPhone());
+//            }
+//
+//
+//            @NonNull
+//            @Override
+//            public OrderAdapter.orderHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+//                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.order_layout, parent, false);
+//                return new OrderAdapter(view);
+//            }
+//        };
         recyclerView.setAdapter(adapter);
     }
 
